@@ -1,3 +1,0 @@
-import sys
-
-# Code something!
