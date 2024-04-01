@@ -1,0 +1,11 @@
+Hostname: Router
+
+Interfaces: GigabitEthernet0/0/0
+Interfaces: GigabitEthernet0/0/1
+Interfaces: GigabitEthernet0/0/2
+Interfaces: Vlan1
+
+Shutdown Interfaces: GigabitEthernet0/0/0
+Shutdown Interfaces: GigabitEthernet0/0/1
+Shutdown Interfaces: GigabitEthernet0/0/2
+Shutdown Interfaces: Vlan1
