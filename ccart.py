@@ -13,13 +13,16 @@ CFG_FILE = './configs/Router0_running-config.txt'
 CURR_USER = 'configuroo'
 # Init CiscoConfParse with current config path
 config = CiscoConfParse(CFG_FILE)
-# Init file to output to
-out = open("./output/output.txt", "w")
 # Datetime Init
 dt = datetime.now()
 ts = dt.strftime("%Y-%m-%d %H:%M:%S")
+# Init output report file
+reportName = "report_" + dt.strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
+out = open("./output/" + reportName, "w")
 
 # === REPORT GENERATION ===
+# Top of report includes datetime, current user*, and current config file
+# * Placeholder for future implementation
 def generateReportHeader():
     out.write("=== REPORT ===\n")
     out.write("Date/Time Generated: " + ts + "\n")
@@ -27,6 +30,7 @@ def generateReportHeader():
     out.write("Configuration File: " + CFG_FILE + "\n\n")
     out.write("=== FINDINGS ===\n")
 
+# Bottom of report includes security score
 def generateReportFooter():
     out.write("=== END OF REPORT ===\n")
     out.write("\nSecurity Score: NaN\n")
