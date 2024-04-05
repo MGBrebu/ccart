@@ -1,10 +1,13 @@
-=== REPORT ===
-Date/Time Generated: 2024-04-03 15:45:42
+=== BEGIN REPORT ===
+Date/Time Generated: 2024-04-05 14:08:00
 Current User: configuroo
 Configuration File: ./configs/Router0_running-config.txt
 
-=== FINDINGS ===
+# DEVICE INFO
 Hostname: Router
+Version: 16.6.4
+
+# FINDINGS
 Interfaces: GigabitEthernet0/0/0
 Interfaces: GigabitEthernet0/0/1
 Interfaces: GigabitEthernet0/0/2
@@ -13,7 +16,8 @@ Shutdown Interfaces: GigabitEthernet0/0/0
 Shutdown Interfaces: GigabitEthernet0/0/1
 Shutdown Interfaces: GigabitEthernet0/0/2
 Shutdown Interfaces: Vlan1
-Password: no service password-encryption
-=== END OF REPORT ===
 
+# SCORE
 Security Score: NaN
+
+=== END REPORT ===
