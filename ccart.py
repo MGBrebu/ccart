@@ -1,4 +1,5 @@
 import os
+import sys
 from datetime import datetime
 from ciscoconfparse2 import CiscoConfParse
 
@@ -138,5 +139,9 @@ def findPassword(config, out):
 
 # =========================
 # Main function
-generateReport("ccart", "./configs/Default_startup-config.txt")
-#generateReport("ccart", "./configs/Passwords_startup-config.txt")
+try:
+    filepath = sys.argv[1]
+    generateReport("ccart", filepath)
+except IndexError:
+    print("Usage: python ccart.py <path_to_config>")
+    sys.exit(1)

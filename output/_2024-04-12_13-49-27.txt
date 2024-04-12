@@ -1,0 +1,27 @@
+=== BEGIN REPORT ===
+# REPORT INFO
+Date/Time Generated: 2024-04-12 13:49:27
+Current User: ccart
+Configuration File: .\configs\Default_startup-config.txt
+
+# DEVICE INFO
+Hostname: Default
+Version: 16.6.4
+Interfaces:
+- GigabitEthernet0/0/0
+- GigabitEthernet0/0/1
+- GigabitEthernet0/0/2
+- Vlan1
+Shutdown Interfaces:
+- GigabitEthernet0/0/0
+- GigabitEthernet0/0/1
+- GigabitEthernet0/0/2
+- Vlan1
+
+# AUDIT
+Audit: NaN
+
+# SCORE
+Security Score: NaN
+
+=== END REPORT ===

@@ -8,5 +8,5 @@ Provides the backend functionality for the greater [Configuroo](https://github.c
 * [ciscoconfparse](https://pypi.org/project/ciscoconfparse/)  
 
 ### Usage
-1. Run using `python .\ccart.py` in local context
+1. Run using `python .\ccart.py <path_to_config>` in local context
 2. (*Optional*) Run `python .\clearOut.py` to remove any reports generated in `.\output`
