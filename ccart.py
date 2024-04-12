@@ -21,6 +21,7 @@ def generateReport(user, file):
     curr_user = user
     # Create report file with timestamp and open for writing
     reportName = file.split("/")[-1].split(".")[0] + "_" + dt.strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
+    print("Report name: " + reportName)
     try: 
         out = open('./output/' + reportName, 'w')
         # Parse the config file uploaded in configuroo.py
@@ -141,6 +142,8 @@ def findPassword(config, out):
 # Main function
 try:
     filepath = sys.argv[1]
+    if "\\" in filepath:
+        filepath = filepath.replace("\\", "/")
     generateReport("ccart", filepath)
 except IndexError:
     print("Usage: python ccart.py <path_to_config>")
