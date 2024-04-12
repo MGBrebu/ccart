@@ -21,7 +21,6 @@ def generateReport(user, file):
     curr_user = user
     # Create report file with timestamp and open for writing
     reportName = file.split("/")[-1].split(".")[0] + "_" + dt.strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
-    print("Report name: " + reportName)
     try: 
         out = open('./output/' + reportName, 'w')
         # Parse the config file uploaded in configuroo.py
