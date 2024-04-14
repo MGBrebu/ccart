@@ -10,14 +10,14 @@ from ciscoconfparse2 import CiscoConfParse
 # In collaboration with greater Configuroo web application project
 # ------------------------------------------------
 
-# Datetime Init
-dt = datetime.now()
-ts = dt.strftime("%Y-%m-%d %H:%M:%S")
-
 # === REPORT GENERATION FUNCTIONALITY ===
 # Main report function generates report using header, footer, and all findings functions
 def generateReport(user, file):
-    print(f"Generating report for {file.split('/')[-1]} at {ts}...    ")
+    # Datetime Init
+    dt = datetime.now()
+    timestamp = dt.strftime("%Y-%m-%d %H:%M:%S")
+    
+    print(f"Generating report for {file.split('/')[-1]} at {timestamp}...    ")
     # Get current user
     curr_user = user
     # Create report file with timestamp and open for writing
@@ -31,7 +31,7 @@ def generateReport(user, file):
 
         # Header
         print("--- Generating report header...")
-        generateReportHeader(curr_user, file, out)
+        generateReportHeader(curr_user, timestamp, file, out)
         print("Report header generated!")
 
         # Device Info
@@ -64,10 +64,10 @@ def generateReport(user, file):
 # Generate report header
 # Includes datetime, current user*, and current config file
 # * Placeholder for future implementation
-def generateReportHeader(curr_user, file, out):
+def generateReportHeader(curr_user, timestamp, file, out):
     out.write("=== BEGIN REPORT ===\n")
     out.write("# REPORT INFO\n")
-    out.write("Date/Time Generated: " + ts + "\n")
+    out.write("Date/Time Generated: " + timestamp + "\n")
     out.write("Current User: " + curr_user + "\n")
     out.write("Configuration File: " + file + "\n")
 
@@ -85,8 +85,8 @@ def generateReportDeviceInfo(version, hostname, intf, sh_intf, out):
         out.write("- " + str(" ".join(i.split()[1:])) + "\n")
 
 # Generate audit report
-# Gets info from JSON file given the audit check name and section to look for
-# Eg. Gets description of "default-hostname" check
+# Getimestamp info from JSON file given the audit check name and section to look for
+# Eg. Getimestamp description of "default-hostname" check
 def getCheckInfo(file, check, section):
     checks = json.load(open(file, "r"))
     return checks[check][section]
@@ -99,6 +99,7 @@ def generateReportAudit(config, version, hostname, intf, sh_intf, out):
     out.write("- DEFAULT HOSTNAME\n")
     if findDefaultHostname(hostname):
         out.write(getCheckInfo("./audit/audit_checks.json", "default-hostname", "description") + "\n")
+        out.write(getCheckInfo("./audit/audit_checks.json", "default-hostname", "remediation") + "\n")
     else:
         out.write("Hostname is not default.\n")
     
