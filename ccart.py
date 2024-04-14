@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 from datetime import datetime
 from ciscoconfparse2 import CiscoConfParse
 
@@ -13,7 +14,7 @@ from ciscoconfparse2 import CiscoConfParse
 dt = datetime.now()
 ts = dt.strftime("%Y-%m-%d %H:%M:%S")
 
-# === REPORT GENERATION ===
+# === REPORT GENERATION FUNCTIONALITY ===
 # Main report function generates report using header, footer, and all findings functions
 def generateReport(user, file):
     print(f"Generating report for {file.split('/')[-1]} at {ts}...    ")
@@ -22,22 +23,37 @@ def generateReport(user, file):
     # Create report file with timestamp and open for writing
     reportName = file.split("/")[-1].split(".")[0] + "_" + dt.strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
     try: 
+        # Initialize report file
         out = open('./output/' + reportName, 'w')
-        # Parse the config file uploaded in configuroo.py
+
+        # Import config file to be parsed
         config = CiscoConfParse(file)
+
         # Header
+        print("--- Generating report header...")
         generateReportHeader(curr_user, file, out)
+        print("Report header generated!")
+
         # Device Info
+        print("--- Generating report device info...")
         version = findVersion(config)
         hostname = findHostname(config)
         intf = findInterfaces(config)
         sh_intf = findShutdownInterfaces(config)
-        generateReportDeviceInfo(hostname, version, intf, sh_intf, out)
+        generateReportDeviceInfo(version, hostname, intf, sh_intf, out)
+        print("Report device info generated!")
+
         # Audit
-        generateReportAudit(config, out)
+        print("--- Generating report audit...")
+        generateReportAudit(config, version, hostname, intf, sh_intf, out)
+        print("Report audit generated!")
+
         # Footer
+        print("--- Generating report footer...")
         generateReportFooter(out)
+        print("Report footer generated!")
     except Exception as e:
+        # If error in generation, remove existing report and create error report
         out.close()
         os.remove(f"./output/{reportName}")
         open('./output/' + "error_" + reportName, 'w').write(f"Error generating report:\n {e}")
@@ -57,23 +73,35 @@ def generateReportHeader(curr_user, file, out):
 
 # Generate device info
 # Includes hostname, version, interfaces, and shutdown interfaces
-def generateReportDeviceInfo(hostname, version, intf, sh_intf, out):
+def generateReportDeviceInfo(version, hostname, intf, sh_intf, out):
     out.write("\n# DEVICE INFO\n")
-    out.write("Hostname: " + hostname + "\n")
-    out.write("Version: " + version + "\n")
+    out.write("Hostname: " + str(" ".join(hostname.text.split()[1:])) + "\n")
+    out.write("Version: " + str(" ".join(version.text.split()[1:])) + "\n")
     out.write("Interfaces:\n")
     for i in intf:
-        out.write("- " + " ".join(i.split()[1:]) + "\n")
+        out.write("- " +  str(" ".join(i.split()[1:])) + "\n")
     out.write("Shutdown Interfaces:\n")
     for i in sh_intf:
-        out.write("- " + " ".join(i.split()[1:]) + "\n")
+        out.write("- " + str(" ".join(i.split()[1:])) + "\n")
 
 # Generate audit report
-# Includes all audit findings
-def generateReportAudit(config, out):
-    out.write("\n# AUDIT\n")
-    out.write("Audit: NaN\n")
+# Gets info from JSON file given the audit check name and section to look for
+# Eg. Gets description of "default-hostname" check
+def getCheckInfo(file, check, section):
+    checks = json.load(open(file, "r"))
+    return checks[check][section]
 
+# Includes all audit checks
+def generateReportAudit(config, version, hostname, intf, sh_intf, out):
+    out.write("\n# AUDIT\n")
+
+    # Default hostname check
+    out.write("- DEFAULT HOSTNAME\n")
+    if findDefaultHostname(hostname):
+        out.write(getCheckInfo("./audit/audit_checks.json", "default-hostname", "description") + "\n")
+    else:
+        out.write("Hostname is not default.\n")
+    
 # Generate report footer
 # Includes security score and end of report
 def generateReportFooter(out):
@@ -83,27 +111,33 @@ def generateReportFooter(out):
     out.close()
 # =========================
 
-# === DEVICE INFO ===
+# === DEVICE INFO FUNCTIONALITY ===
 # Finding version
 def findVersion(config):
+    print("# Finding version...")
     try:
         version = config.find_objects(['version'])[0]
-        return str(" ".join(version.text.split()[1:]))
+        print("# Version found!")
+        return version
     except IndexError:
+        print("# X Unable to find version, IndexError\n" + str(IndexError))
         return "Unable to find version, IndexError\n" + str(IndexError)
 
 # Finding hostname
 def findHostname(config):
+    print("# Finding hostname...")
     try:
         hostname = config.find_objects(['hostname'])[0]
-        return str(" ".join(hostname.text.split()[1:]))
+        print("# Hostname found!")
+        return hostname
     except IndexError:
+        print("# X Unable to find hostname, IndexError\n" + str(IndexError))
         return "Unable to find hostname, IndexError\n" + str(IndexError)
 
 # Finding interfaces
 def findInterfaces(config):
+    print("# Finding interfaces...")
     try:
-        print("# Finding interfaces...")
         intfaces = config.find_parent_objects(['interface'])
         print("# Interfaces found!")
         return intfaces
@@ -113,8 +147,8 @@ def findInterfaces(config):
 
 # Finding shutdown interfaces
 def findShutdownInterfaces(config):
+    print("# Finding shutdown interfaces...")
     try:
-        print("# Finding shutdown interfaces...")
         sh_intfaces = config.find_parent_objects(['interface', 'shutdown'])
         if sh_intfaces == []:
             raise Exception("Search returned empty list.")
@@ -125,16 +159,19 @@ def findShutdownInterfaces(config):
         return ["- Unable to find shutdown interfaces in this config file."]
 # =========================
 
-# === AUDIT ===
-# Finding if there is a password set
-def findPassword(config, out):
+# === AUDIT FUNCTIONALITY ===
+# Finding if hostname is default
+def findDefaultHostname(hostname):
+    print("# Finding if hostname is default...")
     try:
-        for password in config.find_objects(r"password"):
-            if password.text.startswith("password"):
-                out.write(f"Password: {password}\n")
-                print(password)
-    except IndexError:
-        out.write("Unable to find password, IndexError\n" + str(IndexError))
+        if hostname.text.split()[1] == "Router" or hostname.text.split()[1] == "Switch":
+            print("# Hostname is default!")
+            return True
+        else:
+            print("# Hostname is not default!")
+            return False
+    except Exception as e:
+        return "# X Unable to find if hostname is default \n" + str(e)
 # =========================
 
 # =========================

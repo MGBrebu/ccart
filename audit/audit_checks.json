@@ -1,0 +1,6 @@
+{
+  "default-hostname": {
+      "description": "The device name is set as factory default. Consider changing the hostname of the device to something that better represents its purpose or location.",
+      "remediation": "Device(config-terminal)# hostname <new-hostname>"
+  }
+}

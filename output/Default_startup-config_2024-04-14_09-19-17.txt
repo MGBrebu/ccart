@@ -1,0 +1,28 @@
+=== BEGIN REPORT ===
+# REPORT INFO
+Date/Time Generated: 2024-04-14 09:19:17
+Current User: ccart
+Configuration File: ./configs/Default_startup-config.txt
+
+# DEVICE INFO
+Hostname: Router
+Version: 16.6.4
+Interfaces:
+- GigabitEthernet0/0/0
+- GigabitEthernet0/0/1
+- GigabitEthernet0/0/2
+- Vlan1
+Shutdown Interfaces:
+- GigabitEthernet0/0/0
+- GigabitEthernet0/0/1
+- GigabitEthernet0/0/2
+- Vlan1
+
+# AUDIT
+- DEFAULT HOSTNAME
+Consider changing the default hostname of the device to something that better represents its purpose or location.
+
+# SCORE
+Security Score: NaN
+
+=== END REPORT ===
