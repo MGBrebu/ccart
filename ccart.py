@@ -105,6 +105,14 @@ def generateReportAudit(config, version, hostname, intf, sh_intf, out):
     else:
         out.write("Hostname is not default.\n")
 
+    # Password Encryption enabled check
+    out.write("- PASSWORD ENCRYPTION\n")
+    if findPasswordEncryption(config):
+        out.write("Password encryption service is enabled.\n")
+    else:
+        out.write(getCheckInfo("./audit/audit_checks.json", "password-encryption", "description") + "\n")
+        out.write(getCheckInfo("./audit/audit_checks.json", "password-encryption", "remediation") + "\n")
+
     print("Audit report generated!") # Logging
     
 # Generate report footer
@@ -180,6 +188,22 @@ def findDefaultHostname(hostname):
     except Exception as e:
         print(" X Unable to find if hostname is default\n" + str(e))  # Logging
         return "X Unable to find if hostname is default \n" + str(e)
+    
+# Finding if password encryption service is enabled
+def findPasswordEncryption(config):
+    print(" # Finding if password encryption service is enabled...") # Logging
+    try:
+        pass_encryption = config.find_objects(['service password-encryption'])
+        if (" ".join(pass_encryption[0].split()[:1])) == "no":
+            print(" Password encryption service is not enabled!") # Logging
+            return False
+        else:
+            print(" Password encryption service is enabled!") # Logging
+            return True
+    except Exception as e:
+        print(" X Unable to find if password encryption service is enabled\n" + str(e))  # Logging
+        return "X Unable to find if password encryption service is enabled\n" + str(e)
+    
 # =========================
 
 # =========================

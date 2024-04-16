@@ -1,6 +1,10 @@
 {
   "default-hostname": {
       "description": "The device name is set as factory default. Consider changing the hostname of the device to something that better represents its purpose or location.",
-      "remediation": "Device(config-terminal)# hostname <new-hostname>"
+      "remediation": "Device(config)# hostname <new-hostname>"
+  },
+  "password-encryption": {
+      "description": "The device is not configured to encrypt passwords. Passwords should be encrypted to prevent unauthorized access to the device.",
+      "remediation": "Device(config)# service password-encryption"
   }
 }

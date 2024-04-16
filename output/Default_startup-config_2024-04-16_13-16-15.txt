@@ -1,0 +1,32 @@
+=== BEGIN REPORT ===
+# REPORT INFO
+Date/Time Generated: 2024-04-16 13:16:15
+Current User: ccart
+Configuration File: ./configs/Default_startup-config.txt
+
+# DEVICE INFO
+Hostname: Router
+Version: 16.6.4
+Interfaces:
+- GigabitEthernet0/0/0
+- GigabitEthernet0/0/1
+- GigabitEthernet0/0/2
+- Vlan1
+Shutdown Interfaces:
+- GigabitEthernet0/0/0
+- GigabitEthernet0/0/1
+- GigabitEthernet0/0/2
+- Vlan1
+
+# AUDIT
+- DEFAULT HOSTNAME
+The device name is set as factory default. Consider changing the hostname of the device to something that better represents its purpose or location.
+Device(config)# hostname <new-hostname>
+- PASSWORD ENCRYPTION
+The device is not configured to encrypt passwords. Passwords should be encrypted to prevent unauthorized access to the device.
+Device(config)# service password-encryption
+
+# SCORE
+Security Score: NaN
+
+=== END REPORT ===
