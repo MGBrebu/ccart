@@ -57,7 +57,7 @@ def generateReport(user, file):
         open('./output/' + "error_" + reportName, 'w').write(f"Error generating report:\n {e}")
         print(f"### Error generating report:\n {e}")
 
-    print(f"### Report generated!")
+    print(f"### Report generated!") # Logging
 
 # Generate report header
 # Includes datetime, current user*, and current config file
@@ -121,13 +121,13 @@ def generateReportFooter(out):
 # === DEVICE INFO FUNCTIONALITY ===
 # Finding version
 def findVersion(config):
-    print(" # Finding version...")
+    print(" # Finding version...") # Logging
     try:
         version = config.find_objects(['version'])[0]
-        print(" Version found!")
+        print(" Version found!") # Logging
         return version
     except IndexError:
-        print(" X Unable to find version, IndexError\n" + str(IndexError))
+        print(" X Unable to find version, IndexError\n" + str(IndexError)) # Logging
         return "X Unable to find version, IndexError\n" + str(IndexError)
 
 # Finding hostname
