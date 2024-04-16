@@ -113,6 +113,22 @@ def generateReportAudit(config, version, hostname, intf, sh_intf, out):
         out.write(getCheckInfo("./audit/audit_checks.json", "password-encryption", "description") + "\n")
         out.write(getCheckInfo("./audit/audit_checks.json", "password-encryption", "remediation") + "\n")
 
+    # Enable password (non-secret) check
+    out.write("- ENABLE PASSWORD (NON-SECRET)\n")
+    if checkEnablePassword(config):
+        out.write("Enable password (non-secret) is set.\n")
+    else:
+        out.write(getCheckInfo("./audit/audit_checks.json", "enable-password", "description") + "\n")
+        out.write(getCheckInfo("./audit/audit_checks.json", "enable-password", "remediation") + "\n")
+
+    # Enable secret check
+    out.write("- ENABLE SECRET\n")
+    if checkEnableSecret(config):
+        out.write("Enable secret is set.\n")
+    else:
+        out.write(getCheckInfo("./audit/audit_checks.json", "enable-secret", "description") + "\n")
+        out.write(getCheckInfo("./audit/audit_checks.json", "enable-secret", "remediation") + "\n")
+
     print("Audit report generated!") # Logging
     
 # Generate report footer
@@ -204,6 +220,33 @@ def findPasswordEncryption(config):
         print(" X Unable to find if password encryption service is enabled\n" + str(e))  # Logging
         return "X Unable to find if password encryption service is enabled\n" + str(e)
     
+def checkEnablePassword(config):
+    print(" # Finding if enable password (non-secret) is set...") # Logging
+    try:
+        enable_pass = config.find_objects(['enable password'])
+        if enable_pass:
+            print(" Enable password (non-secret) is set!") # Logging
+            return True
+        else:
+            print(" Enable password (non-secret) is not set!") # Logging
+            return False
+    except Exception as e:
+        print(" X Unable to find if enable password (non-secret) is set\n" + str(e))  # Logging
+        return "X Unable to find if enable password (non-secret) is set\n" + str(e)
+    
+def checkEnableSecret(config):
+    print(" # Finding if enable secret is set...") # Logging
+    try:
+        enable_secret = config.find_objects(['enable secret'])
+        if enable_secret:
+            print(" Enable secret is set!") # Logging
+            return True
+        else:
+            print(" Enable secret is not set!") # Logging
+            return False
+    except Exception as e:
+        print(" X Unable to find if enable secret is set\n" + str(e))  # Logging
+        return "X Unable to find if enable secret is set\n" + str(e)
 # =========================
 
 # =========================
