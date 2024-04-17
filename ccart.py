@@ -10,10 +10,14 @@ from ciscoconfparse2 import CiscoConfParse
 # In collaboration with greater Configuroo web application project
 # ------------------------------------------------
 
+# Init score
+score = 0
+
 # === REPORT GENERATION FUNCTIONALITY ===
-# Main report function generates report using header, footer, and all findings functions
+# # Main report function 
+# Generates report using header, footer, and all findings functions
 def generateReport(user, file):
-    # Datetime Init
+    # Init Datetime
     dt = datetime.now()
     timestamp = dt.strftime("%Y-%m-%d %H:%M:%S")
     
@@ -59,7 +63,7 @@ def generateReport(user, file):
 
     print(f"### Report generated!") # Logging
 
-# Generate report header
+# # Generate report header
 # Includes datetime, current user*, and current config file
 # * Placeholder for future implementation
 def generateReportHeader(curr_user, timestamp, file, out):
@@ -71,7 +75,7 @@ def generateReportHeader(curr_user, timestamp, file, out):
 
     print("Report header generated!") # Logging
 
-# Generate device info
+# # Generate device info
 # Includes hostname, version, interfaces, and shutdown interfaces
 def generateReportDeviceInfo(version, hostname, intf, sh_intf, out):
     out.write("\n# DEVICE INFO\n")
@@ -86,13 +90,7 @@ def generateReportDeviceInfo(version, hostname, intf, sh_intf, out):
     
     print("Device info generated!") # Logging
 
-# Generate audit report
-# Getimestamp info from JSON file given the audit check name and section to look for
-# Eg. Getimestamp description of "default-hostname" check
-def getCheckInfo(file, check, section):
-    checks = json.load(open(file, "r"))
-    return checks[check][section]
-
+# # Generate audit report
 # Includes all audit checks
 def generateReportAudit(config, version, hostname, intf, sh_intf, out):
     out.write("\n# AUDIT\n")
@@ -135,7 +133,7 @@ def generateReportAudit(config, version, hostname, intf, sh_intf, out):
 # Includes security score and end of report
 def generateReportFooter(out):
     out.write("\n# SCORE")
-    out.write("\nSecurity Score: NaN\n")
+    out.write("\nSecurity Score: " + str(str(getScore()) + " / " + str(getCheckCount("./audit/audit_checks.json"))))
     out.write("\n=== END REPORT ===")
     out.close()
 
@@ -143,6 +141,9 @@ def generateReportFooter(out):
 # =========================
 
 # === DEVICE INFO FUNCTIONALITY ===
+# Device info functions get basic info about device from config file
+# These are not audit checks, but are used in audit checks
+
 # Finding version
 def findVersion(config):
     print(" # Finding version...") # Logging
@@ -191,63 +192,98 @@ def findShutdownInterfaces(config):
 # =========================
 
 # === AUDIT FUNCTIONALITY ===
+# Audit functions grab score from global scope, perform audit check, and increment score if passed
+
 # Finding if hostname is default
 def findDefaultHostname(hostname):
+    global score # Grabbing score
     print(" # Finding if hostname is default...") # Logging
     try:
         if hostname.text.split()[1] == "Router" or hostname.text.split()[1] == "Switch":
-            print(" Hostname is default!") # Logging
+            print(" -Hostname is default!") # Logging
             return True
         else:
-            print(" Hostname is not default!") # Logging
+            print(" +Hostname is not default!") # Logging
+            score += 1 # Scoring
             return False
     except Exception as e:
         print(" X Unable to find if hostname is default\n" + str(e))  # Logging
         return "X Unable to find if hostname is default \n" + str(e)
     
-# Finding if password encryption service is enabled
+# Finding if the password encryption service is enabled
 def findPasswordEncryption(config):
+    global score # Grabbing score
     print(" # Finding if password encryption service is enabled...") # Logging
     try:
         pass_encryption = config.find_objects(['service password-encryption'])
         if (" ".join(pass_encryption[0].split()[:1])) == "no":
-            print(" Password encryption service is not enabled!") # Logging
+            print(" -Password encryption service is not enabled!") # Logging
             return False
         else:
-            print(" Password encryption service is enabled!") # Logging
+            print(" +Password encryption service is enabled!") # Logging
+            score += 1 # Scoring
             return True
     except Exception as e:
         print(" X Unable to find if password encryption service is enabled\n" + str(e))  # Logging
         return "X Unable to find if password encryption service is enabled\n" + str(e)
     
+# Finding if the enable password (non-secret) is set
 def checkEnablePassword(config):
+    global score # Grabbing score
     print(" # Finding if enable password (non-secret) is set...") # Logging
     try:
         enable_pass = config.find_objects(['enable password'])
         if enable_pass:
-            print(" Enable password (non-secret) is set!") # Logging
+            print(" +Enable password (non-secret) is set!") # Logging
+            score += 1 # Scoring
             return True
         else:
-            print(" Enable password (non-secret) is not set!") # Logging
+            print(" -Enable password (non-secret) is not set!") # Logging
             return False
     except Exception as e:
         print(" X Unable to find if enable password (non-secret) is set\n" + str(e))  # Logging
         return "X Unable to find if enable password (non-secret) is set\n" + str(e)
     
+# Finding if the enable secret password is set
 def checkEnableSecret(config):
+    global score # Grabbing score
     print(" # Finding if enable secret is set...") # Logging
     try:
         enable_secret = config.find_objects(['enable secret'])
         if enable_secret:
-            print(" Enable secret is set!") # Logging
+            print(" +Enable secret is set!") # Logging
+            score += 1 # Scoring
             return True
         else:
-            print(" Enable secret is not set!") # Logging
+            print(" -Enable secret is not set!") # Logging
             return False
     except Exception as e:
         print(" X Unable to find if enable secret is set\n" + str(e))  # Logging
         return "X Unable to find if enable secret is set\n" + str(e)
 # =========================
+
+# === GENERAL FUNCTIONS ===
+# Importing JSON file function, general purpose so can swap out audit check JSONs if need be
+def importJson(file):
+    return json.load(open(file, "r"))
+
+# Returns amount of checks in given JSON file, basically enumerates all checks
+# For scoring out of total checks
+def getCheckCount(file, checkCount = 0):
+    for c in importJson(file):
+        checkCount += 1
+    return checkCount
+
+# Use importJson() to grab specific audit check info given check name and section to search
+# Eg. Get "description" of "default-hostname" check
+def getCheckInfo(file, check, section):
+    data = importJson(file)
+    return data[check][section]
+
+# Returns score from global scope
+def getScore():
+    global score
+    return score
 
 # =========================
 # Main function
