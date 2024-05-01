@@ -1,18 +1,87 @@
 {
-  "default-hostname": {
+    "default-hostname": {
       "description": "The device name is set as factory default. Consider changing the hostname of the device to something that better represents its purpose or location.",
       "remediation": "Device(config)# hostname <new-hostname>"
-  },
-  "password-encryption": {
-      "description": "The device is not configured to encrypt passwords. Passwords should be encrypted to prevent unauthorized access to the device.",
-      "remediation": "Device(config)# service password-encryption"
-  },
-  "enable-password": {
-      "description": "The enable password is not set. The enable password should be set to control access to privileged EXEC mode.",
-      "remediation": "Device(config)# enable password <password>"
-  },
-  "enable-secret": {
-      "description": "The enable secret is not set. The enable secret should be set to control access to privileged EXEC mode.",
-      "remediation": "Device(config)# enable secret <password>"
-  }
+    },
+    "password-encryption": {
+        "description": "The device is not configured to encrypt passwords. Passwords should be encrypted to prevent unauthorized access to the device.",
+        "remediation": "Device(config)# service password-encryption"
+    },
+    "enable-password": {
+        "description": "The enable password is not set. The enable password should be set to control access to privileged EXEC mode.",
+        "remediation": "Device(config)# enable password <password>"
+    },
+    "enable-secret": {
+        "description": "The enable secret is not set. The enable secret should be set to control access to privileged EXEC mode.",
+        "remediation": "Device(config)# enable secret <password>"
+    },
+    "native-VLAN": {
+        "description": "The native VLAN is set to VLAN 1. It's recommended to change the native VLAN to enhance network security.The attacker could send untagged traffic to gain unauthorized access ",
+        "remediation": "Device(config-if)# switchport trunk native vlan <vlan-id>"
+    },
+    "banner-motd": {
+        "description": "The banner message of the day (MOTD) is used to warn users that unauthorised access is not allowed. Be careful not to include any sensitive information.",
+        "remediation": "Device(config)# banner motd <message>. The <message> should be a warning that unauthorised access is prohibited."
+      },
+    "acl-configuration": {
+        "description": "No ACLs are configured on the device. ACLs should be used to control traffic flow and enhance security.",
+        "remediation": "Device(config)# access-list <acl-name> <rule> OR ip access-list <acl-name/acl-number> <rules>"
+    },
+    "acl-unrestrictedaccess": {
+        "description": "No ACLs are configured on the device. ACLs should be used to control traffic flow and enhance security.",
+        "remediation": "REMEDIATION"
+    },
+   "unused-interfaces": {
+        "description": "Some interfaces are not used. Disabling unused interfaces is recommended to prevent unauthorised access.",
+        "remediation": "Device(config)#interface <interface-id> OR Device(config)#no interface <interface-id>"
+    },
+    "ssh-version": {
+        "description": "SSH v2 should be configured.",
+        "remediation": "Device(config)#ip ssh version 2"
+    },
+    "traffic-encryption": {
+        "description": "Traffic encryption secures remote access connections to the device. Ensure encryption is enabled to prevent unauthorised access and eavesdropping.",
+        "remediation": "Device(config)#crypto key generate rsa modulus <Key-size>"
+    },
+    "ssh-configuration": {
+        "description": "Make sure to enable SSH configuration for sessions time-out and authentication retries. to enhance securety of remote access ",
+        "remediation": "Device(config)# ip ssh time-out <time-inseconds>\nDevice(config)# ip ssh authentication-retries <number-of retries>."
+    },
+    "port-security": {
+        "description": "Port Security is used to mitigate MAC address spoofing at the access interface. Ensure Port Security is configured to prevent unauthorized access.",
+        "remediation": "Device(config-if)#switchport port-security\nDevice(config-if)#switchport port-security maximum <max-secure-mac-count>\nDevice(config-if)#switchport port-security violation <violation-mode>"
+    },
+    "aaa-authentication": {
+        "description": "AAA authentication provides a comprehensive security solution for controlling access to network devices, services, and operations.",
+        "remediation": "Device(config)# aaa new-model\nDevice(config)# aaa authentication <auth-type> <method-list>"
+    },
+    "timestamp-logging": {
+        "description": "Timestamp logging enables the inclusion of timestamps with log messages, allowing for easier analysis and troubleshooting of network events.",
+        "remediation": "Device(config)# service timestamps log datetime msec"
+    },
+    "central-logging": {
+        "description": "Sending centeral loggin to syslog server, makes it possible to correlate and audit network and security events across network devices more effectively",
+        "remediation": "Device(config)#logging host <ip-address>"
+    },
+    "https-secure-server":{
+        "description": "HTTPS server is not enabled. Ensure to enable the secure server HTTPS to establish an encrypted and secure remote access management connection",
+        "remediation": "Device(config)# ip http secure-server"
+    },
+    "enable-vty-ssh-sessions": {
+        "description": "Enable vty inbound SSH sessions (only)",
+        "remediation": "Device(config)# line vty 0 15\nDevice(config-line)#login local \nDevice(config-line)#transport input"
+    },
+    "ntp-configuration":{
+        "description": "Configure the Network Time Protocol on the network. This protocol allows devices on the network to synchronise their time settings with an NTP server for more consistent time settings",
+        "remediation": "Device(config)# ntp server  <ip address>"
+    },
+    "snapshot-configuration":{
+        "description": "There is NO snapshot of running-config. Take a snapshot of the device running configuration & store a secure copy in persistent storage",
+        "remediation": "Device(config)# secure boot-config"
+    },
+    "ios-image-resilience":{
+        "description": "Cisco IOS resilient configuration feature is NOT enabled. This feature maintains a secure working copy of the device IOS image file, Allows for faster recovery if someone maliciously or unintentionally reformats flash memory ",
+        "remediation": "Device(config)# secure boot-image"
+    }
+
 }

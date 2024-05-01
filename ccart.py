@@ -711,7 +711,9 @@ try:
     filepath = sys.argv[1]
     if "\\" in filepath:
         filepath = filepath.replace("\\", "/")
-    generateReport("ccart", filepath)
+    reportName = "./output/" + generateReport("ccart", filepath)["name"]
+    print(f"Report generated at {reportName}")
+
 except IndexError:
     print("Usage: python ccart.py <path_to_config>")
     sys.exit(1)
